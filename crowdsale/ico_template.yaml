@@ -1,0 +1,57 @@
+transaction_type: token
+
+# This template defines a token minting at the begining
+# So when the contract will be deployed, the network will mint tokens as well
+content: |
+  {
+    "supply": 1000000000000000000,
+    "type": "fungible",
+    "symbol": "TOKEN_SYMBOL",
+    "name": "TOKEN_NAME",
+    "properties": {}
+  }
+
+# This templates defines the smart contract code to manage the crowdsale
+# by exchanging minted tokens by taking some of UCO as conversion.
+# In that example 1 UCO = 10000 tokens
+smart_contract: |
+  @version 1
+   
+  condition triggered_by: transaction, on: buy_token(), as: [
+    uco_transfers: check_amount()
+  ]
+  
+  actions triggered_by: transaction, on: buy_token() do
+    # Get the amount of UCO sent to this contract
+    amount_send = number_of_uco_sent()
+    
+    # Convert UCO to the number of tokens to credit. Each UCO worth 10000 token
+    token_to_credit = number_of_tokens(amount_send)
+    
+    Contract.set_type("transfer")
+    
+    # Users can specify to send the token in a different address
+    Contract.add_token_transfer(
+      to: transaction.address,
+      token_address: token_address(), 
+      amount: token_to_credit
+    )
+  end
+  
+  fun number_of_tokens(uco_amount) do
+    uco_amount * 10000
+  end
+  
+  fun number_of_uco_sent() do
+    genesis_address = Chain.get_genesis_address(contract.address)
+    Map.get(transaction.uco_transfers, genesis_address)
+  end
+  
+  fun check_amount(transfers) do
+    genesis_address = Chain.get_genesis_address(contract.address)
+    Map.get(transfers, genesis_address, 0) > 0
+  end
+  
+  fun token_address() do
+    Chain.get_first_transaction_address(contract.address)
+  end

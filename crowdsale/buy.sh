@@ -75,7 +75,7 @@ contractGenesisAddress=$(echo "$result" | grep -o '"genesisAddress":"[^"]*' | se
 buyCmd="archethic-cli send-transaction \
 	--transaction-type transfer \
 	--uco-transfer $contractGenesisAddress=$AMOUNT
-    --recipient $CONTRACT='{\"action\": \"buy_token\", \"args\": []}'
+	--recipient $CONTRACT='{\"action\": \"buy_token\", \"args\": []}'
 	--endpoint $ENDPOINT \
 	--access-seed $SEED"
 

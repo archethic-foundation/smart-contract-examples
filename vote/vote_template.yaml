@@ -1,0 +1,40 @@
+transaction_type: contract
+
+# This templates defines the smart contract code to manage the vote
+smart_contract: |
+  @version 1
+
+  condition triggered_by: transaction, on: vote(candidate), as: [
+      content: List.in?(["smith", "doe"], normalize_candidate(candidate))
+  ]
+  
+  actions triggered_by: transaction, on: vote(candidate) do
+      next_votes = []
+ 
+      # We initialize the votes, if there is not previous state
+      if contract.content == "" do
+        next_votes = add_vote([smith: 0, doe: 0], normalize_candidate(candidate))
+      else
+        # We accumulate the votes
+        current_votes = get_votes()
+        next_votes = add_vote(get_votes(), normalize_candidate(candidate))
+      end
+ 
+      # We flush the votes as JSON
+      Contract.set_content(Json.to_string(next_votes))
+  end
+
+  fun normalize_candidate(name) do
+    String.to_lowercase(name)
+  end
+  
+  fun add_vote(votes, candidate) do
+    previous_votes = Map.get(votes, candidate, 0)
+    Map.set(votes, candidate, previous_votes + 1)
+  end
+
+  export fun get_votes() do
+    count_smith = Json.path_extract(contract.content, "$.smith")
+    count_doe = Json.path_extract(contract.content, "$.doe")
+    [smith: count_smith, doe: count_doe]
+  end

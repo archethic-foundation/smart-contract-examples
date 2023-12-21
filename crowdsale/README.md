@@ -1,6 +1,6 @@
 # Crowdsale example
 
-This examples demonstrates the usage of Archethic smart contract and the CLI in the context of crowdsale and ICO to sell tokens in exchange of UCOs.
+This examples demonstrates the usage of Archethic smart contract and the [CLI](https://github.com/archethic-foundation/archethic-cli) in the context of crowdsale and ICO to sell tokens in exchange of UCOs.
 
 ## Funding
 
@@ -27,10 +27,11 @@ archethic-cli generate-address --seed USER_SEED
 To initiate the contract's chain, you can use this script to deploy it
 
 ```sh
-sh ./deploy.sh --seed=CONTRACT_SEED --endpoint=https://testnet.archethic.net
+./deploy.sh --seed=CONTRACT_SEED --endpoint=https://testnet.archethic.net
 ```
 
-This will take the configuration file `ico.yaml` containing the smart contract and the token definition to create smart contract and mint the tokens at once
+This will take the configuration file `ico_template.yaml` containing the smart contract and the token definition to create smart contract 
+while minting the tokens at once.
 
 ## Buy tokens
 
